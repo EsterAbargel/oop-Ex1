@@ -1,5 +1,7 @@
-package myMath;
+package Ex1Testing;
 import java.util.ArrayList;
+
+import Ex1.Monom;
 
 //import com.sun.tools.sjavac.server.SysInfo;
 /**

@@ -1,4 +1,4 @@
-package myMath;
+package Ex1;
 
 import java.util.Comparator;
 
@@ -139,6 +139,15 @@ public class Monom implements function{
 	private static Monom getNewZeroMonom() {return new Monom(ZERO);}
 	private double _coefficient; 
 	private int _power;
+	@Override
+	public function initFromString(String s) {
+		function m=new Monom(s);
+		return m;
+	}
+	@Override
+	public function copy() {
+		return new Monom(this.toString());
+	}
 
 
 }
