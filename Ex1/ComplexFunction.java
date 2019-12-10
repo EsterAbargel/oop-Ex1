@@ -34,7 +34,7 @@ public class ComplexFunction implements complex_function {
 		switch(operation) {
 		case "plus":
 			return Operation.Plus;
-		case "divide":
+		case "div":
 			return Operation.Divid;
 		case "times":
 			return Operation.Times;
@@ -221,5 +221,20 @@ public class ComplexFunction implements complex_function {
 
 		return this.op;
 	}
+	@Override
+	public boolean equals(Object ob) {
+		if(ob == null || !(ob instanceof function)) {
+			return false;
+		}
+		else{
+			function cf = this.initFromString(ob.toString());
+			for(double x = -1; x <= 1; x += 0.01) {
+				if(Math.abs(this.f(x) - cf.f(x)) > Monom.EPSILON) {
+					return false;
+				}
+			}
+			return true;
+		}
 
+	}
 }
