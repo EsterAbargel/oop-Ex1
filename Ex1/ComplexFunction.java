@@ -222,12 +222,12 @@ public class ComplexFunction implements complex_function {
 		return this.op;
 	}
 	@Override
-	public boolean equals(Object ob) {
-		if(ob == null || !(ob instanceof function)) {
+	public boolean equals(Object obj) {
+		if(obj == null || !(obj instanceof function)) {
 			return false;
 		}
 		else{
-			function cf = this.initFromString(ob.toString());
+			function cf = this.initFromString(obj.toString());
 			for(double x = -1; x <= 1; x += 0.01) {
 				if(Math.abs(this.f(x) - cf.f(x)) > Monom.EPSILON) {
 					return false;
