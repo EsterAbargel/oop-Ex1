@@ -3,8 +3,12 @@ package Ex1;
 public class ComplexFunction implements complex_function {
 	private function left,right;
 	private Operation op;
-
-	public ComplexFunction(function f1,function f2,Operation oper) {
+	public ComplexFunction() {
+		this.left=null;
+		this.right=null;
+		this.op=Operation.None;
+	}
+	public ComplexFunction(Operation oper,function f2,function f1) {
 		this.left=f1;
 		this.right=f2;
 		this.op=oper;
@@ -17,7 +21,7 @@ public class ComplexFunction implements complex_function {
 	}
 	public ComplexFunction(function f1,function f2,String s){
 		Operation op=this.findOperation(s);
-		ComplexFunction cf=new ComplexFunction(f1,f2,op);
+		ComplexFunction cf=new ComplexFunction(op,f2,f1);
 		this.left=cf.left;
 		this.right=cf.right;
 		this.op=cf.op;
@@ -29,6 +33,13 @@ public class ComplexFunction implements complex_function {
 
 	}
 
+	public ComplexFunction(String op, Polynom polynom, ComplexFunction cf) {
+		Operation oper=this.findOperation(op);
+		this.op=oper;
+		function f1=polynom;
+		this.left=f1;
+		this.right=this.initFromString(cf.toString());
+	}
 	public Operation findOperation(String operation){
 		operation=operation.toLowerCase();
 		switch(operation) {
@@ -121,7 +132,7 @@ public class ComplexFunction implements complex_function {
 			Operation oper = this.findOperation(s.substring(0, index));
 			function left = initFromString(leftFun);
 			function right = initFromString(rightFun);
-			function function= new ComplexFunction(left,right,oper);
+			function function= new ComplexFunction(oper,right,left);
 			return function;
 		}
 	}
@@ -149,7 +160,7 @@ public class ComplexFunction implements complex_function {
 
 	@Override
 	public function copy() {
-		return new ComplexFunction(this.left,this.right,this.op);
+		return new ComplexFunction(this.op,this.right,this.left);
 	}
 
 	@Override

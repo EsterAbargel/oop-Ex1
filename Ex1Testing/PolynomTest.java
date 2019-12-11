@@ -1,93 +1,134 @@
 package Ex1Testing;
-
+import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import Ex1.Monom;
 import Ex1.Polynom;
+import Ex1.Polynom_able;
 
-public class PolynomTest {
-	public static void main(String[] args) {
-		test1();
-		test2();
-		test3();
-		test4();
-	}
-	/*the first test tests creating a polynom of a string,in case of valid and invalid strings.
-	 * it also tests the area, the f function. isZero  function and substruct function.
-	 */
-	public static void test1() {
-		System.out.println("******test one*******");
-		Polynom p1 = new Polynom();
-		String[] monoms = {"1","x","x^2", "0.5x^2"};
-		for(int i=0; i < monoms.length; i++) 
-		{
-			Monom m1 = new Monom(monoms[i]);
-			p1.add(m1); //using function add 
-		}
-		System.out.println(p1.toString());
-		System.out.println("when the x is 2, the polynom outcome is " + p1.f(2));//using function f
-		double aa = p1.area(0, 1, 0.0001); //using function area
-		System.out.println("area of p1 is "+aa);
-		System.out.println("substruct: "+p1+ " - "+'(' + p1+ ')' );
-		p1.substract(p1);
-		System.out.println("= "+p1);
-		System.out.println(p1 +" \tisZero: "+p1.isZero());
-		String valid="2x^2+4x+3x^2+1+x";
-		System.out.println("String valid is: "+valid);
-		Polynom p2 = new Polynom(valid); //using function polynom(string)
-		System.out.println("the polynom after inserting the valid string: "+p2.toString());
-		String invalid="2x^2-4x+3x^2&+1+x";
-		System.out.println("String invalid is: "+invalid);
-		Polynom p3 = new Polynom(invalid); //Ignore the forbidden monom
-		System.out.println("the polynom after ignoring the invalid monom in the string is: "+p3.toString());
-	} 
-	/* the second test tests the add function of the polynom, copy function 
-	add function and derivatives*/
-	public static void test2() {
-		System.out.println("**********test two**********");
-		Polynom p1 = new Polynom();
-		String[] monoms1 = { "2x^4","-4x^2","3","3x^3"};
-		for(int i=0;i<monoms1.length;i++) {
-			Monom m = new Monom(monoms1[i]);
-			p1.add(m);
-		}
-		System.out.println("p1 is: "+p1.toString());
-		p1=(Polynom) p1.derivative().derivative();
-		System.out.println("p1 after two derivatives is: "+p1);
-		Polynom p2=(Polynom) p1.copy();
-		System.out.println("p2 after copy p1 is: "+p2.toString());
-		
-		
+class PolynomTest 
+{
+	static Polynom actualPolynom;
+	static Polynom expectedPolynom;
 
+	@BeforeEach
+	void setUp() throws Exception 
+	{
+		actualPolynom = new Polynom();
+		actualPolynom.add(new Monom(2,3));
+		actualPolynom.add(new Monom(4,2));
+		actualPolynom.add(new Monom(-1,4));
 	}
-	/*the third test tests the equal and multiply functions
-	 * 
-	 */
-	
-	public static void test3(){
-		System.out.println("******test three********");
-		Polynom p1 = new Polynom ("2x^2+4");
-		Polynom p2 = new Polynom ("24x^3+10x^5+8x");
-		System.out.println("p1 is: "+p1.toString()+" p2 is: "+p2.toString());
-		Polynom p3= new Polynom("5x^3+2x");
-		p1.multiply(p3);
-		System.out.println("p1 after muliplying (5x^3+2x) is:  "+ p1.toString());
-		System.out.println("p1= "+p1+ "p2= "+p2.toString()+" are they equals? " + p1.equals(p2));
+
+	@Test
+	void testAddAndEquals()  //the next tests are uses Equal method, so firstly we'll make sure it won't failed
+	{
+		expectedPolynom = new Polynom();
+		expectedPolynom.add(new Monom(2,3));
+		expectedPolynom.add(new Monom(4,2));
+		expectedPolynom.add(new Monom(-1,4));
+		if (!(expectedPolynom.equals(actualPolynom)))	
+			fail("The equals method is inncorect ");
 	}
-	/*
-	 * the fourth test tests the function root
-	 */
-	public static void test4(){
-		System.out.println("*******test four*****");
-		Polynom p1=new Polynom("x^2-9");//roots are +3 and -3;
-		System.out.println("polynom p1 is: ");
-		double posRoot=p1.root(0, 8, 0.001);
-		System.out.println("positive root is: "+posRoot);
-		double negRoot=p1.root(-8, 0, 0.001);
-		System.out.println("negative root is: "+negRoot);
-		Polynom p2=new Polynom("x^2+9");//has no root-always above the x axis.
-		System.out.println("polynom p2 is: "+p2);
-		double root1=p2.root(0, 8, 0.001);
-		System.out.println(root1);
+
+	@Test
+	void testPolynomStr() 
+	{
+		expectedPolynom = new Polynom ("2x^3+4x^2-x^4");
+		if (!(expectedPolynom.equals(actualPolynom)))	
+			fail("The insert string polynom method is inncorect ");
 	}
-	
+
+	@Test
+	void testF()
+	{
+		double xVal = 3;
+		double expectedValue = 2*(Math.pow(xVal, 3)) + 4*Math.pow(xVal, 2) -Math.pow(xVal, 4);
+		if (actualPolynom.f(xVal) != expectedValue)
+			fail("F method is inncorect");
+	}
+
+	@Test
+	void testSubstruct()
+	{
+		Polynom p = new Polynom ("2x^3+4x^2-x^4");
+		actualPolynom.substract(p);
+		expectedPolynom = new Polynom ("0");
+		if (!(expectedPolynom.equals(actualPolynom)))	
+			fail(" Substcat method is inncorect");
+		actualPolynom = new Polynom ("2x^3+4x^2");
+		actualPolynom.substract(p);
+		expectedPolynom = new Polynom ("x^4");
+		if (!(expectedPolynom.equals(actualPolynom)))	
+			fail(" Substcat method is inncorect");
+	}
+
+	@Test
+	void testmuliply()
+	{
+		Polynom p = new Polynom ("2x^3");
+		actualPolynom.multiply(p);
+		expectedPolynom = new Polynom ("4x^6+8x^5-2x^7");
+		if (!(expectedPolynom.equals(actualPolynom)))	
+			fail(" multipy method is inncorect");
+	}
+
+	@Test
+	void testIsZero() 
+	{
+		boolean expectedAns = true;
+		if (actualPolynom.isZero() == expectedAns)
+			fail("IsZero Method returns true for polynom that is not zero");
+		Polynom p = new Polynom("0");
+		if (p.isZero() != expectedAns)
+			fail("IsZero Method returns false for polynom that is zero");
+	}
+
+	@Test
+	void testRoot() 
+	{
+		actualPolynom = new Polynom("x^2-9"); //roots are +3 and -3.
+		double posRoot = actualPolynom.root(0, 8, 0.001);
+		double negRoot = actualPolynom.root(-8, 0, 0.001);
+		double expectedPos = 3;
+		double expectedNeg = -3;
+		if (negRoot != expectedNeg)
+			fail("Root method returns worng value");
+		if (posRoot != expectedPos)
+			fail ("Root method returns worng value");
+	}
+
+	@Test
+	void testCopy()
+	{
+		Polynom_able p = new Polynom ();
+		p = actualPolynom.copy();
+		expectedPolynom = new Polynom ("2x^3+4x^2-x^4");
+		if (!(expectedPolynom.equals(p)))	
+			fail(" Copy method is inncorect");
+	}
+
+	@Test
+	void testDerivative()
+	{
+		expectedPolynom = new Polynom ("6x^2+8x-4x^3");
+		Polynom_able p = actualPolynom.derivative();
+		if (!(expectedPolynom.equals(p)))	
+			fail("Derivative method is inncorect");
+		expectedPolynom = new Polynom ("6x^2+8x");
+		if (expectedPolynom.equals(p))
+			fail("Derivative method is inncorect");
+	}
+
+	@Test
+	void testArea()
+	{
+		double actualVal = actualPolynom.area(0, 1, 0.0001);
+		double expectedAa = 1.6330833416663786;
+		if (expectedAa != actualVal)
+			fail ("Area method returns worng value");
+	}
+
 }
