@@ -130,7 +130,10 @@ class ComplexFunctionTest
 	void testToString()
 	{
 		String expected="plus(2.0x^3,4.0x^2)";
-		if (!(expected.equals(actualCF.toString())));
+		String str =actualCF.toString();
+		System.out.println(expected);
+		System.out.println(str);
+		if (!(expected.equals(str)))
 			fail(" method toString");  
 	}
 	@Test
