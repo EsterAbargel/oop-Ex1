@@ -78,24 +78,24 @@ class ComplexFunctionTest
 		if (!(expectedCF.equals(actualCF)))
 			fail(" method div");  
 	}
-	
 	@Test
 	void testMax()
 	{
 		actualCF = new ComplexFunction(Operation.Min, f1,f2);
 		double actualAns=actualCF.f(1);
 		int expectedans=4;
-		if (!(expectedans==expectedans))
-			fail(" method min"); 
+		if (expectedans!=expectedans)
+			fail(" method max"); 
 	}
 	
+
 	@Test
 	void testMin()
 	{
 		actualCF = new ComplexFunction(Operation.Min, f1,f2);
 		double actualAns=actualCF.f(1);
 		int expectedans=2;
-		if (!(expectedans==expectedans))
+		if (expectedans!=expectedans)
 			fail(" method min");  
 	}
 	
@@ -106,7 +106,7 @@ class ComplexFunctionTest
 		expectedCF.comp(f1);
 		actualCF.comp(f1);
 		if (!(expectedCF.equals(actualCF)))
-			fail(" method min");  
+			fail(" method comp");  
 	}
 	@Test
 	void testInitFromString()
@@ -131,8 +131,6 @@ class ComplexFunctionTest
 	{
 		String expected="plus(2.0x^3,4.0x^2)";
 		String str =actualCF.toString();
-		System.out.println(expected);
-		System.out.println(str);
 		if (!(expected.equals(str)))
 			fail(" method toString");  
 	}
