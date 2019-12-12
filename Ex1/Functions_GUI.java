@@ -15,6 +15,13 @@ import java.util.Iterator;
 import java.util.Random;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
+
+import jdk.nashorn.api.scripting.JSObject;
+
 
 
 public class Functions_GUI implements functions {
@@ -117,7 +124,7 @@ public class Functions_GUI implements functions {
 		catch(IOException e){
 			e.printStackTrace();
 		}
-	
+
 	}
 
 	@Override
@@ -135,7 +142,7 @@ public class Functions_GUI implements functions {
 		catch  (FileNotFoundException e){
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	@Override
@@ -153,69 +160,63 @@ public class Functions_GUI implements functions {
 	}
 	public Color draw(function f,Range rx, Range ry, int res) {
 		StdDraw.setXscale(rx.get_min(), rx.get_max());
-		StdDraw.setYscale(ry.get_min(), ry.get_max()); 
+		StdDraw.setYscale(ry.get_min(), ry.get_max());
+		StdDraw.setPenColor(Color.LIGHT_GRAY);
+		for(double i= ry.get_min(); i<=ry.get_max();i++) {
+			StdDraw.line(rx.get_min(), i, rx.get_max(), i);
+			StdDraw.text(0.1,i+0.1,i+""); 
+		}
+		for(double i=rx.get_min(); i<=rx.get_max(); i++) {
+			StdDraw.line(i, ry.get_min(), i, ry.get_max());
+			StdDraw.text(i+0.1,0.1,i+""); 
+		}
+	
+		Random rand = new Random();
+		int r = rand.nextInt(256); int g = rand.nextInt(256); int b = rand.nextInt(256);
+		Color col=new Color(r,g,b);
 		StdDraw.setPenColor(Color.black);
 		StdDraw.setPenRadius(0.005);
-		StdDraw.line(rx.get_min(), 0, rx.get_max(), 0);
-		StdDraw.line(0, ry.get_min(), 0, ry.get_max());		
-		double[] x=new double[res+1];
-		double[] y=new double[res+1];
-		double x_steps=(rx.get_max()-rx.get_min())/(res);
-		double n=rx.get_min();
+		StdDraw.line(rx.get_min(),0, rx.get_max(), 0);
+		StdDraw.line(0, ry.get_min(), 0, ry.get_max());
+		StdDraw.setPenColor(col);
+		double step = (Math.abs(rx.get_min())+Math.abs(rx.get_max()))/res;
+			for(double i =rx.get_min(); i< rx.get_max(); i=i+step) {
+				StdDraw.line(i, f.f(i), i+step, f.f(i+step));
+			}
 
-		for (int i = 0; i < res; i++) {
-			x[i]=x_steps*i+n;
-			y[i]=f.f(x[i]);	
-		}
-		for (double i=ry.get_min(); i<ry.get_max(); i++)
-		{
-			StdDraw.setPenColor(Color.gray);
-			StdDraw.setPenRadius(0.002);
-			StdDraw.line(rx.get_min(),i,rx.get_max(),i);
-
-		}
-		for (double i=rx.get_min(); i<rx.get_max(); i++)
-		{
-			StdDraw.setPenColor(Color.gray);
-			StdDraw.setPenRadius(0.0005);
-			StdDraw.line(i,ry.get_min(),i,ry.get_max());
-		}
-		StdDraw.setPenColor(Color.red); StdDraw.setPenRadius(0.005);
-		for (int i = (int) ry.get_min(); i <= ry.get_max(); i=i+1) {
-			if(i!=0)
-				StdDraw.text((rx.get_min()/(rx.get_min()-rx.get_max()))-0.05, i+0.05, Integer.toString(i));
-		}
-		for (int i = (int) rx.get_min(); i <= rx.get_max(); i=i+1) {
-			if(i!=0)
-				StdDraw.text(i+0.07 ,ry.get_min()/(ry.get_min()-ry.get_max())-0.05, Integer.toString(i));
-		}
-		Random random = new Random();
-		int r = random.nextInt(256); 
-		int g = random.nextInt(256); 
-		int b = random.nextInt(256);
-		StdDraw.setPenColor(r,g,b); StdDraw.setPenRadius(0.005);
-		for (int i = 0; i < res-1; i++) {
-			StdDraw.line(x[i], y[i], x[i+1], y[i+1]);
-		}
-
-		return new Color(r,g,b);
+		return col;
 	}
 
 	@Override
 	public void drawFunctions(String json_file) {
-		Gson gson = new Gson();
-		try 
-		{
-			FileReader fr=new FileReader (json_file);
-			Graph g=gson.fromJson(fr,Graph.class);
-			this.drawFunctions(g.Width, g.Height, new Range(g.rx[0],g.rx[1]) ,new Range(g.ry[0],g.ry[1]), g.resolution);
-		}
 		
+		JsonParser parser = new JsonParser(); 
+		int width = 1 , height=1 , resolution=1 ;
+
+		try {
+			Object obj = parser.parse(new FileReader(json_file));
+			JsonObject jsonObject = (JsonObject) obj;
+	        width = jsonObject.get("Width").getAsInt();
+			height = jsonObject.get("Height").getAsInt();
+			resolution = jsonObject.get("Resolution").getAsInt();
+			JsonArray range_X = (JsonArray)jsonObject.get("Range_X");
+			JsonArray range_Y = (JsonArray)jsonObject.get("Range_Y");	
+			Range rx= new Range(range_X.get(0).getAsDouble(),range_X.get(1).getAsDouble());
+			Range ry= new Range(range_Y.get(0).getAsDouble(),range_Y.get(1).getAsDouble());;
+			this.drawFunctions(width, height, rx, ry,  resolution);
+
+		}
 		catch (FileNotFoundException e) {
-			this.drawFunctions("error");
+			this.drawFunctions("GUI_params.json");
 		}
-	
-		
+		catch (IllegalArgumentException e) {
+			this.drawFunctions("GUI_params.json");
+		}
+		catch (JsonSyntaxException e) {
+			this.drawFunctions("GUI_params.json");
+
+		}
+		 
 	}
 
 

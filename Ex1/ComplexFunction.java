@@ -19,7 +19,7 @@ public class ComplexFunction implements complex_function {
 			this.right=null;
 		}
 	}
-	public ComplexFunction(function f1,function f2,String s){
+	public ComplexFunction(String s, function f1,function f2){
 		Operation op=this.findOperation(s);
 		ComplexFunction cf=new ComplexFunction(op,f2,f1);
 		this.left=cf.left;
@@ -75,9 +75,15 @@ public class ComplexFunction implements complex_function {
 		case Divid:
 			return ans+this.left.f(x)/this.right.f(x);
 		case Max:
-			return ans+Math.max(this.left.f(x),this.right.f(x));
+			if(this.left.f(x)>this.right.f(x)) {
+				return ans+this.left.f(x);
+			}
+			return ans+ this.right.f(x);
 		case Min:
-			return ans + Math.min(this.left.f(x), this.right.f(x));
+			if(this.left.f(x)<this.right.f(x)) {
+				return ans+this.left.f(x);
+			}
+			return ans+ this.right.f(x);
 		case Comp:
 			return ans + this.left.f(this.right.f(x));
 		case Error:
@@ -162,6 +168,10 @@ public class ComplexFunction implements complex_function {
 	public function copy() {
 		return new ComplexFunction(this.op,this.right,this.left);
 	}
+	/** Add to this complex_function the f1 complex_function
+	 * 
+	 * @param f1 the complex_function which will be added to this complex_function.
+	 */
 
 	@Override
 	public void plus(function f1) {
@@ -171,6 +181,10 @@ public class ComplexFunction implements complex_function {
 		this.left=temp;
 
 	}
+	/** Multiply this complex_function with the f1 complex_function
+	 * 
+	 * @param f1 the complex_function which will be multiply be this complex_function.
+	 */
 
 	@Override
 	public void mul(function f1) {
@@ -181,6 +195,11 @@ public class ComplexFunction implements complex_function {
 
 	}
 
+	/** Divides this complex_function with the f1 complex_function
+	 * 
+	 * @param f1 the complex_function which will be divid this complex_function.
+	 */
+
 	@Override
 	public void div(function f1) {
 		function temp=this.copy();
@@ -189,6 +208,10 @@ public class ComplexFunction implements complex_function {
 		this.left=temp;
 	}
 
+	/** Computes the maximum over this complex_function and the f1 complex_function
+	 * 
+	 * @param f1 the complex_function which will be compared with this complex_function - to compute the maximum.
+	 */
 	@Override
 	public void max(function f1) {
 		function temp=this.copy();
@@ -197,7 +220,10 @@ public class ComplexFunction implements complex_function {
 		this.left=temp;
 
 	}
-
+	/** Computes the minimum over this complex_function and the f1 complex_function
+	 * 
+	 * @param f1 the complex_function which will be compared with this complex_function - to compute the minimum.
+	 */
 	@Override
 	public void min(function f1) {
 		function temp=this.copy();
@@ -207,6 +233,11 @@ public class ComplexFunction implements complex_function {
 
 	}
 
+	/**
+	 * This method wrap the f1 complex_function with this function: this.f(f1(x))
+	 * @param f1 complex function
+	 */
+
 	@Override
 	public void comp(function f1) {
 		function temp=this.copy();
@@ -214,24 +245,36 @@ public class ComplexFunction implements complex_function {
 		this.right=f1;
 		this.left=temp;
 	}
-
+	/** returns the left side of the complex function - this side should always exists (should NOT be null).
+	 * @return a function representing the left side of this complex funcation
+	 */
 	@Override
 	public function left() {
 
 		return this.left;
 	}
-
+	/** returns the right side of the complex function - this side might not exists (aka equals null).
+	 * @return a function representing the left side of this complex funcation
+	 */
 	@Override
 	public function right() {
 
 		return this.right;
 	}
-
+	/**
+	 * The complex_function oparation: plus, mul, div, max, min, comp
+	 * @return
+	 */
 	@Override
 	public Operation getOp() {
 
 		return this.op;
 	}
+	/** returns true if the given object equals this complex function else false
+	 * @param obj is the given object.
+	 * 
+	 * 
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if(obj == null || !(obj instanceof function)) {
